@@ -10,12 +10,14 @@ class App extends Component {
     super();
 
     this.state = {
-      posts: []
+      posts: [],
+      searchInput: ''
     };
 
     this.updatePost = this.updatePost.bind( this );
     this.deletePost = this.deletePost.bind( this );
     this.createPost = this.createPost.bind( this );
+    this.searchPosts = this.searchPosts.bind(this);
   }
   
   componentDidMount() {
@@ -34,27 +36,38 @@ class App extends Component {
       })
   }
 
-  deletePost() {
-
+  deletePost(id) {
+    axios.delete(`https://practiceapi.devmountain.com/api/posts?id=${id}`)
+      .then(res=>{
+        this.setState({posts: res.data})
+      })
   }
 
-  createPost() {
+  createPost(text) {
+    axios.post(`https://practiceapi.devmountain.com/api/posts`,{text})
+      .then(res=>{
+        this.setState({posts: res.data})
+      })
+  }
 
+  searchPosts(text){
+    let newText = encodeURI(text);
+    this.setState({searchInput: newText})
   }
 
   render() {
-    const { posts } = this.state;
+    const { posts,searchInput } = this.state;
     // const {newThis} = this.updatePost;
     // console.log(newThis)
-    let allPosts = getPosts(posts,this.updatePost)
+    let allPosts = getPosts(posts,this.updatePost,this.deletePost,searchInput)
     // console.log(allPosts)
     return (
       <div className="App__parent">
-        <Header />
+        <Header searchPosts={this.searchPosts}/>
 
         <section className="App__content">
 
-          <Compose />
+          <Compose createPostFn={this.createPost}/>
           {/* insert code here to map over this.state.posts and render a Post component for each post in this.state.posts */}
           {allPosts}
         </section>
@@ -63,9 +76,9 @@ class App extends Component {
   }
 }
 
-function getPosts(posts,newThis){
+function getPosts(posts,updtThis,delThis,serInput){
   // console.log(newThis)
-  if(posts.length!==0){
+  if(posts.length!==0 && serInput===''){
     return(
       <div>
         {posts.map((post)=>{
@@ -74,10 +87,30 @@ function getPosts(posts,newThis){
                   text={post.text}
                   date={post.date}
                   id={post.id}
-                  updatePostFn={newThis}/>
+                  updatePostFn={updtThis}
+                  deletePostFn={delThis}
+                  />
           )
         })}
       </div>)
+  } else if (posts.length!==0 && serInput!==''){
+    let jsxArray = [];
+    for (let i = 0; i<posts.length; i++){
+      if(posts[i].text.indexOf(serInput)>-1){
+        jsxArray = jsxArray.push(
+          <div>
+            <Post key={posts[i].id}
+                  text={posts[i].text}
+                  date={posts[i].date}
+                  id={posts[i].id}
+                  updatePostFn={updtThis}
+                  deletePostFn={delThis}
+                  />
+          </div>
+        )
+      }
+    }
+    return jsxArray
   }
 }
 

@@ -9,6 +9,9 @@ import Search from './Search/Search';
 //////////////////////////////////////////////////////// THIS COMPONENT IS BEING RENDERED IN THE *APP* COMPONENT
 
 export default class Header extends Component {
+  constructor(props){
+    super(props)
+  }
   render() {
     return (
       <section className="Header__parent">
@@ -22,7 +25,7 @@ export default class Header extends Component {
 
           {/* Displays the search bar */}
           <div className="Header__right">
-            <Search />
+            <Search searchPosts={this.props.searchPosts}/>
 
             {/* Displays the profile icon */}
             <div className="Header__profile">
