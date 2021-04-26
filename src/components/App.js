@@ -94,10 +94,12 @@ function getPosts(posts,updtThis,delThis,serInput){
         })}
       </div>)
   } else if (posts.length!==0 && serInput!==''){
+    console.log(posts)
     let jsxArray = [];
     for (let i = 0; i<posts.length; i++){
-      if(posts[i].text.indexOf(serInput)>-1){
-        jsxArray = jsxArray.push(
+      if(posts[i].text.includes(serInput)===true){
+        jsxArray.push(
+          // return(
           <div>
             <Post key={posts[i].id}
                   text={posts[i].text}
@@ -107,7 +109,9 @@ function getPosts(posts,updtThis,delThis,serInput){
                   deletePostFn={delThis}
                   />
           </div>
+          // )
         )
+        console.log(jsxArray)
       }
     }
     return jsxArray
