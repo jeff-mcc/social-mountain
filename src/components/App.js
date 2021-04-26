@@ -27,8 +27,11 @@ class App extends Component {
       })
   }
 
-  updatePost() {
-  
+  updatePost(id,text) {
+    axios.put(`https://practiceapi.devmountain.com/api/posts?id=${id}`,{text})
+      .then(res=>{
+        this.setState({posts: res.data});
+      })
   }
 
   deletePost() {
@@ -41,7 +44,9 @@ class App extends Component {
 
   render() {
     const { posts } = this.state;
-    let allPosts = getPosts(posts)
+    // const {newThis} = this.updatePost;
+    // console.log(newThis)
+    let allPosts = getPosts(posts,this.updatePost)
     // console.log(allPosts)
     return (
       <div className="App__parent">
@@ -58,24 +63,21 @@ class App extends Component {
   }
 }
 
-function getPosts(posts){
-  console.log(posts)
+function getPosts(posts,newThis){
+  // console.log(newThis)
   if(posts.length!==0){
-    console.log('posts was not empty')
     return(
       <div>
         {posts.map((post)=>{
           return(
-            <Post key={post.id}/>
+            <Post key={post.id}
+                  text={post.text}
+                  date={post.date}
+                  id={post.id}
+                  updatePostFn={newThis}/>
           )
         })}
       </div>)
-    // console.log(allPosts)
-    // return allPosts
-  } else{
-    console.log('posts was empty')
-    let allPosts = <div>Empty Array</div>;
-    return allPosts
   }
 }
 
