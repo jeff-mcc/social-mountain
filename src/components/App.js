@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-
+import axios from 'axios'
 import './App.css';
-
+import Post from './Post/Post'
 import Header from './Header/Header';
 import Compose from './Compose/Compose';
 
@@ -19,7 +19,12 @@ class App extends Component {
   }
   
   componentDidMount() {
-
+    axios.get('https://practiceapi.devmountain.com/api/posts')
+      .then(obj => {
+        const posts = obj.data;
+        this.setState({posts})
+        // console.log(this.state.posts)
+      })
   }
 
   updatePost() {
@@ -36,7 +41,8 @@ class App extends Component {
 
   render() {
     const { posts } = this.state;
-
+    let allPosts = getPosts(posts)
+    // console.log(allPosts)
     return (
       <div className="App__parent">
         <Header />
@@ -44,10 +50,32 @@ class App extends Component {
         <section className="App__content">
 
           <Compose />
-          
+          {/* insert code here to map over this.state.posts and render a Post component for each post in this.state.posts */}
+          {allPosts}
         </section>
       </div>
     );
+  }
+}
+
+function getPosts(posts){
+  console.log(posts)
+  if(posts.length!==0){
+    console.log('posts was not empty')
+    return(
+      <div>
+        {posts.map((post)=>{
+          return(
+            <Post key={post.id}/>
+          )
+        })}
+      </div>)
+    // console.log(allPosts)
+    // return allPosts
+  } else{
+    console.log('posts was empty')
+    let allPosts = <div>Empty Array</div>;
+    return allPosts
   }
 }
 
